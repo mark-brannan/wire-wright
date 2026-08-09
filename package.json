@@ -1,0 +1,12 @@
+{
+  "name": "wire-wright",
+  "version": "0.0.1-alpha.0",
+  "description": "ABYC E-11 wire gauge, ampacity, and fuse sizing for small-craft DC circuits, from a CSV circuit list",
+  "type": "module",
+  "bin": { "wire-wright": "bin/cli.mjs" },
+  "exports": { ".": "./lib/calc.js", "./tables": "./lib/tables.js" },
+  "scripts": { "test": "node --test" },
+  "dependencies": { "ampacity": "^0.1.0" },
+  "keywords": ["abyc", "marine", "boat", "rv", "wiring", "ampacity", "wire-gauge", "12v"],
+  "license": "MIT"
+}
