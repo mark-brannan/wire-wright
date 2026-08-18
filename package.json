@@ -8,5 +8,8 @@
   "scripts": { "test": "node --test" },
   "dependencies": { "ampacity": "^0.1.0" },
   "keywords": ["abyc", "marine", "boat", "rv", "wiring", "ampacity", "wire-gauge", "12v"],
-  "license": "MIT"
+  "license": "MIT",
+  "author": "Mark Brannan",
+  "repository": { "type": "git", "url": "git+https://github.com/mark-brannan/wire-wright.git" },
+  "files": ["bin", "lib", "LICENSE"]
 }
