@@ -1,0 +1,88 @@
+name: Bug report
+description: A sizing result looks wrong, or the tool failed
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **A wrong sizing result belongs here, not in a private advisory.** It is
+        the most serious thing this tool can get wrong and there is no attacker
+        to withhold it from — being wrong in the open is how it gets fixed
+        fastest.
+
+        Security problems — a CSV that crashes or hangs the CLI, a path it
+        should not read — go through a
+        [private advisory](https://github.com/mark-brannan/wire-wright/security/advisories/new)
+        instead.
+
+        A value that does not match ABYC E-11 is a *transcription* problem and
+        belongs in [ampacity](https://github.com/mark-brannan/ampacity/issues),
+        which holds the tables. If you are not sure which you have, file it here
+        and it will be moved.
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of problem
+      options:
+        - A conductor size looks wrong
+        - A fuse or breaker rating looks wrong
+        - A circuit was flagged, or not flagged, when it should have been the other way
+        - The CSV was rejected or misread
+        - The CLI crashed or hung
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: circuit
+    attributes:
+      label: The circuit
+      description: >
+        The CSV row, or just the numbers in it — amps, round-trip length,
+        voltage, drop target, insulation rating, engine space, bundle count.
+        This is what turns the report into a test case.
+      render: csv
+      placeholder: |
+        name,amps,length_ft,drop_pct,voltage,insulation_c
+        windlass,80,44,3,12,105
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What it printed, and what you expected
+      description: >
+        Paste the output row. If you expected a different size, say where your
+        expectation comes from — an ABYC lookup table, a surveyor, another
+        calculator.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: wire-wright version
+      description: '`npm ls wire-wright`, or the version field of package.json in the copy you ran.'
+      placeholder: '0.0.1-alpha.0'
+    validations:
+      required: true
+
+  - type: input
+    id: node
+    attributes:
+      label: Node version
+      description: '`node --version`'
+      placeholder: 'v22.11.0'
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Error output
+      description: The stack trace or error text, if it failed rather than printed something wrong.
+      render: text
+    validations:
+      required: false
