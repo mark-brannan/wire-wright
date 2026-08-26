@@ -5,15 +5,10 @@ body:
   - type: markdown
     attributes:
       value: |
-        **A wrong sizing result belongs here, not in a private advisory.** It is
-        the most serious thing this tool can get wrong and there is no attacker
-        to withhold it from — being wrong in the open is how it gets fixed
-        fastest.
-
         Security problems — a CSV that crashes or hangs the CLI, a path it
         should not read — go through a
         [private advisory](https://github.com/mark-brannan/wire-wright/security/advisories/new)
-        instead.
+        instead. A wrong sizing result is not one; report it here.
 
         A value that does not match ABYC E-11 is a *transcription* problem and
         belongs in [ampacity](https://github.com/mark-brannan/ampacity/issues),

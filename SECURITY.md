@@ -33,16 +33,6 @@ If you get no response at all within two weeks, open a public issue saying only
 that you are waiting on a private report — no details — and it will be picked
 up.
 
-## A wrong sizing result is a bug, not a vulnerability — and it outranks one
-
-The output of this tool is used to choose conductors and overcurrent protection
-on boats. An under-sized conductor is the most serious thing that can go wrong
-here, and it is more serious than anything in the scope list below.
-
-**Report it as a public issue anyway.** There is no attacker to withhold it
-from, and being wrong in the open is how it gets found, reproduced and fixed
-fastest. Use the bug form and bring the circuit.
-
 ## What is in scope
 
 - **The CSV reader.** A circuit list is untrusted input — it may come from a
@@ -58,8 +48,9 @@ fastest. Use the bug form and bring the circuit.
 
 ## What is out of scope
 
-- The correctness of a sizing result — see above; that is a public issue and it
-  matters more.
+- **The correctness of a sizing result.** An under-sized conductor is the most
+  serious thing this tool can get wrong, and it is an ordinary bug: open a
+  public issue with the circuit that produced it.
 - The values in the ABYC tables themselves. Those live in
   [ampacity](https://github.com/mark-brannan/ampacity/issues); a transcription
   error is filed there.

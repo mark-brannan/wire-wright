@@ -2,7 +2,7 @@ blank_issues_enabled: true
 contact_links:
   - name: Security vulnerability
     url: https://github.com/mark-brannan/wire-wright/security/advisories/new
-    about: Report privately, not as a public issue. A wrong sizing result is not one — file that here. See SECURITY.md.
+    about: Report privately, not as a public issue. See SECURITY.md.
   - name: A value that does not match ABYC E-11
     url: https://github.com/mark-brannan/ampacity/issues
     about: The tables live in the ampacity package, not here. A transcription error is filed there, with its citation.
