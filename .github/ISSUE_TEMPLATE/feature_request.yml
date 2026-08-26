@@ -1,0 +1,58 @@
+name: Feature request
+description: Suggest a capability, a column, or lifting one of the known limits
+labels: ['enhancement']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The README's *Limits* section lists what this deliberately does not do
+        — sum loads, check panel totals, verify fuse interrupt ratings. Asking
+        for one of those is a perfectly good feature request; naming it is
+        enough.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to work out?
+      description: >
+        Describe it from the installation's point of view rather than as an
+        implementation. What do you do differently once the tool tells you this?
+      placeholder: >
+        I am sizing a new DC panel and I want to know whether the feed to it
+        carries the sum of everything downstream, not just each branch.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of change is it
+      options:
+        - Lift one of the limits in the README
+        - A new CSV column
+        - A new column or flag in the output
+        - A different output format
+        - A change to how a result is calculated
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: safety
+    attributes:
+      label: If this changes a sizing result, which way does it move?
+      description: >
+        Sizing here is conservative where E-11 is ambiguous. A change that
+        produces a *smaller* conductor or a *larger* fuse than today needs the
+        argument written down before the code — see CONTRIBUTING.md. Leave blank
+        if this does not touch a result.
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What do you do about it today?
+      description: A spreadsheet, another calculator, a rule of thumb, or asking someone.
+    validations:
+      required: false
