@@ -11,6 +11,9 @@ const AWG_LABEL = (awg) => (awg === null ? '4/0+' : `${awg} AWG`);
 
 function sentence(r, lengthFt) {
   if (r.awg === null) return r.warnings[0];
+  if (r.fuse === null) {
+    return `At ${lengthFt} ft round trip, ${AWG_LABEL(r.awg)} is required, but no standard fuse fits.`;
+  }
   const rule = r.governs === 'voltage-drop' ? 'voltage drop' : 'heat (ampacity)';
   return `At ${lengthFt} ft round trip, ${rule} decides: ${AWG_LABEL(r.awg)}, ${r.fuse}A fuse.`;
 }
@@ -66,7 +69,7 @@ function initDOM() {
       return;
     }
     out.awg.textContent = AWG_LABEL(r.awg);
-    out.fuse.textContent = `${r.fuse} A`;
+    out.fuse.textContent = r.fuse === null ? '—' : `${r.fuse} A`;
     out.sentence.textContent = r.sentence;
   }
 
