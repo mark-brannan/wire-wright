@@ -1,5 +1,13 @@
 # wire-wright
 
+[![wire-wright web demo](.github/images/web-demo.png)](https://mark-brannan.github.io/wire-wright/)
+
+**[Try it in your browser](https://mark-brannan.github.io/wire-wright/)** —
+type in a circuit, watch the wire size and fuse update as you drag the
+length, and see which rule decided. It runs the same code as the CLI below
+(`web/app.js` bundles `lib/calc.js` with esbuild; nothing is retyped —
+`test/web-bundle.test.mjs` proves the two agree).
+
 ABYC E-11 wire gauge, ampacity, and fuse sizing for small-craft DC
 circuits. Reads a CSV circuit list, prints a sizing table, and flags
 circuits whose inputs are still guesses.
