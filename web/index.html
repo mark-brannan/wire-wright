@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>wire-wright — DC wire size calculator</title>
+<meta name="description" content="Pick the right DC wire and fuse size for a 12V/24V boat circuit, per ABYC E-11, and see which rule decided." />
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+    line-height: 1.5;
+  }
+  h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
+  p.lede { color: #666; margin-top: 0; }
+  fieldset { border: 1px solid #ccc; border-radius: 8px; padding: 1rem; margin: 0 0 1.5rem; }
+  legend { padding: 0 0.4rem; font-weight: 600; }
+  label { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 0.6rem 0; }
+  input[type="number"] { width: 6rem; font-size: 1rem; padding: 0.25rem 0.4rem; }
+  .checkrow { justify-content: flex-start; gap: 0.5rem; }
+  .result {
+    border: 2px solid currentColor;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .result .stat { min-width: 6rem; }
+  .result .stat .label { font-size: 0.8rem; color: #666; }
+  .result .stat .value { font-size: 1.8rem; font-weight: 700; }
+  #outSentence { margin-top: 0.75rem; font-size: 1.05rem; }
+  #outWarning { color: #b45309; font-weight: 600; }
+  .provenance { margin-top: 2rem; font-size: 0.85rem; color: #666; }
+  a { color: inherit; }
+</style>
+</head>
+<body>
+  <h1>wire-wright</h1>
+  <p class="lede">Pick the DC wire size and fuse for one boat circuit, and see which rule decided it.</p>
+
+  <fieldset>
+    <legend>Circuit</legend>
+    <label for="amps">Current (A)<input type="number" id="amps" value="20" min="0.1" step="0.1" /></label>
+    <label for="lengthFt">Round-trip length (ft)<input type="number" id="lengthFt" value="18" min="0.1" step="0.5" /></label>
+    <label for="voltage">System voltage
+      <select id="voltage"><option value="12" selected>12V</option><option value="24">24V</option></select>
+    </label>
+    <label class="checkrow" for="critical"><input type="checkbox" id="critical" checked /> Critical circuit (3% drop, not 10%)</label>
+    <label class="checkrow" for="engineSpace"><input type="checkbox" id="engineSpace" /> Passes through an engine space</label>
+    <label for="bundle">Bundled conductors<input type="number" id="bundle" value="1" min="1" step="1" /></label>
+  </fieldset>
+
+  <div class="result">
+    <div class="stat"><div class="label">Wire size</div><div class="value" id="outAwg">—</div></div>
+    <div class="stat"><div class="label">Fuse</div><div class="value" id="outFuse">—</div></div>
+  </div>
+  <p id="outSentence"></p>
+  <p id="outWarning"></p>
+
+  <p class="provenance">
+    Same math as <code>npx wire-wright</code>, from the ABYC E-11 tables in the
+    <a href="https://github.com/mark-brannan/ampacity">ampacity</a> data package
+    (republished with ABYC's permission at
+    <a href="https://boathowto.com/wiresize/wiresize_tables_abyc.pdf">boathowto.com</a>).
+    DC, copper only, AWG 18 – 4/0. For a whole circuit list, see the
+    <a href="https://github.com/mark-brannan/wire-wright">command-line tool</a>.
+  </p>
+
+  <script src="bundle.js"></script>
+</body>
+</html>
