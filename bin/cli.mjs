@@ -1,6 +1,18 @@
 #!/usr/bin/env node
 import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import { sizeCircuit } from '../lib/calc.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const { version } = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf8'));
+
+const USAGE = `usage: wire-wright <circuits.csv>
+
+required columns: name, amps, length_ft (round trip)
+optional: drop_pct (3|10, default 3), voltage (default 12), engine_space,
+          bundle, insulation_c (default 105), continuous (default true),
+          amps_source, length_source (guess|spec|measured), status, notes`;
 
 function parseCSV(text) {
   const rows = [];
@@ -28,17 +40,34 @@ function parseCSV(text) {
 const bool = (v) => ['true', 'yes', 'y', '1'].includes(String(v).toLowerCase());
 
 function main() {
-  const file = process.argv[2];
-  if (!file) {
-    console.error('usage: wire-wright <circuits.csv>\n');
-    console.error('required columns: name, amps, length_ft (round trip)');
-    console.error('optional: drop_pct (3|10, default 3), voltage (default 12), engine_space,');
-    console.error('          bundle, insulation_c (default 105), continuous (default true),');
-    console.error('          amps_source, length_source (guess|spec|measured), status, notes');
+  const arg = process.argv[2];
+
+  if (arg === '--version' || arg === '-v') {
+    console.log(version);
+    return;
+  }
+
+  if (!arg || arg === '--help' || arg === '-h') {
+    console.error(USAGE);
+    process.exit(arg ? 0 : 2);
+  }
+
+  if (arg.startsWith('-')) {
+    console.error(`wire-wright: unknown option '${arg}'\n`);
+    console.error(USAGE);
     process.exit(2);
   }
 
-  const circuits = parseCSV(readFileSync(file, 'utf8'));
+  const file = arg;
+  let text;
+  try {
+    text = readFileSync(file, 'utf8');
+  } catch (e) {
+    console.error(`wire-wright: can't read ${file}: ${e.code === 'ENOENT' ? 'no such file' : e.message}`);
+    process.exit(1);
+  }
+
+  const circuits = parseCSV(text);
   const out = [];
   const problems = [];
 
