@@ -8,6 +8,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const { version } = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf8'));
 
 const USAGE = `usage: wire-wright <circuits.csv>
+       wire-wright --version | -v
+       wire-wright --help | -h
 
 required columns: name, amps, length_ft (round trip)
 optional: drop_pct (3|10, default 3), voltage (default 12), engine_space,
