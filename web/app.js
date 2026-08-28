@@ -20,8 +20,8 @@ function sentence(r, lengthFt) {
 
 // Pure enough to unit-test without touching the DOM: given the raw form
 // values, return what the page should show.
-export function resultFor({ amps, lengthFt, voltage, critical, engineSpace, bundle }) {
-  if (!(amps > 0) || !(lengthFt > 0)) return null;
+export function resultFor({ amps, lengthFt, voltage = 12, critical, engineSpace, bundle }) {
+  if (!(amps > 0) || !(lengthFt > 0) || !(voltage > 0)) return null;
   const r = sizeCircuit({
     amps,
     lengthFt,
