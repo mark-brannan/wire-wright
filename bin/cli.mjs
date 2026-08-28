@@ -49,13 +49,15 @@ function main() {
 
   if (!arg || arg === '--help' || arg === '-h') {
     console.error(USAGE);
-    process.exit(arg ? 0 : 2);
+    process.exitCode = arg ? 0 : 2;
+    return;
   }
 
   if (arg.startsWith('-')) {
     console.error(`wire-wright: unknown option '${arg}'\n`);
     console.error(USAGE);
-    process.exit(2);
+    process.exitCode = 2;
+    return;
   }
 
   const file = arg;
@@ -64,7 +66,8 @@ function main() {
     text = readFileSync(file, 'utf8');
   } catch (e) {
     console.error(`wire-wright: can't read ${file}: ${e.code === 'ENOENT' ? 'no such file' : e.message}`);
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
   const circuits = parseCSV(text);
