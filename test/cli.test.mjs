@@ -26,6 +26,12 @@ test('--help prints usage and exits 0', () => {
   assert.match(stderr, /usage: wire-wright/);
 });
 
+test('--help usage documents --version and --help', () => {
+  const { stderr } = run(['--help']);
+  assert.match(stderr, /--version/);
+  assert.match(stderr, /--help/);
+});
+
 test('no argument prints usage to stderr and exits 2', () => {
   const { status, stderr } = run([]);
   assert.equal(status, 2);
