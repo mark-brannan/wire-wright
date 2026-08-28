@@ -53,8 +53,9 @@ function main() {
     return;
   }
 
-  if (arg.startsWith('-')) {
-    console.error(`wire-wright: unknown option '${arg}'\n`);
+  const badOpt = process.argv.slice(2).find((a) => a.startsWith('-'));
+  if (badOpt) {
+    console.error(`wire-wright: unknown option '${badOpt}'\n`);
     console.error(USAGE);
     process.exitCode = 2;
     return;

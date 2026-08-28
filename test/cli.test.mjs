@@ -44,3 +44,9 @@ test('an unknown flag is rejected rather than treated as a filename', () => {
   assert.equal(status, 2);
   assert.match(stderr, /unknown option '--version-typo'/);
 });
+
+test('an unknown flag after the CSV path is rejected, not silently ignored', () => {
+  const { status, stderr } = run(['/no/such/circuits.csv', '--unknown']);
+  assert.equal(status, 2);
+  assert.match(stderr, /unknown option '--unknown'/);
+});
