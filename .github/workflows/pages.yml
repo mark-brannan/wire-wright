@@ -22,7 +22,7 @@ jobs:
       # The bundle is generated, not committed — this is the only place it
       # is ever built, so the page can never silently drift from lib/calc.js.
       - run: node scripts/build-web.mjs
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with: { path: dist-web }
 
   deploy:
