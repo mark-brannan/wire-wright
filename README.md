@@ -3,10 +3,12 @@
 [![wire-wright web demo](.github/images/web-demo.png)](https://mark-brannan.github.io/wire-wright/)
 
 **[Try it in your browser](https://mark-brannan.github.io/wire-wright/)** —
-type in a circuit, watch the wire size and fuse update as you drag the
-length, and see which rule decided. It runs the same code as the CLI below
-(`web/app.js` bundles `lib/calc.js` with esbuild; nothing is retyped —
-`test/web-bundle.test.mjs` proves the two agree).
+an editable circuit list (a synthetic 12 V panel, not a real boat's). Change
+an amp, a length, a bundle or an insulation rating and each row's wire size,
+fuse, deciding rule and guess/spec/measured/planned flags update. It runs the
+same code as the CLI below (`web/app.js` bundles `lib/calc.js` and
+`lib/circuits.js` with esbuild; nothing is retyped —
+`test/web-bundle.test.mjs` proves the two agree on the sample list).
 
 ABYC E-11 wire gauge, ampacity, and fuse sizing for small-craft DC
 circuits. Reads a CSV circuit list, prints a sizing table, and flags
