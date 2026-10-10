@@ -107,6 +107,11 @@ function control(col, row, onChange) {
   let node;
   if (col.kind === 'select') {
     node = h('select', common, ...col.options.map(([value, text]) => h('option', { value, textContent: text })));
+    // A value the list does not offer (a CSV `status` of `purchased`, say)
+    // gets its own option, so the select never shows other than what was sized.
+    if (!col.options.some(([value]) => value === row[col.key])) {
+      node.append(h('option', { value: row[col.key], textContent: row[col.key] }));
+    }
     node.value = row[col.key];
   } else if (col.kind === 'check') {
     node = h('input', { ...common, type: 'checkbox', checked: isTrue(row[col.key]) });
