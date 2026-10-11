@@ -1,0 +1,16 @@
+name,amps,length_ft,drop_pct,engine_space,bundle,insulation_c,amps_source,length_source,status
+Bilge pump (primary),8,24,3,false,1,105,spec,measured,installed
+Bilge blower,5,14,3,true,3,105,spec,measured,installed
+Nav lights (masthead),2.5,70,3,false,2,105,spec,measured,installed
+Anchor light,0.5,70,3,false,2,105,spec,measured,installed
+VHF radio,6,28,3,false,1,105,spec,guess,installed
+Chartplotter,2,26,3,false,1,105,spec,measured,installed
+Autopilot drive,12,42,3,false,1,105,spec,measured,installed
+Anchor windlass,85,50,10,false,1,105,spec,measured,installed
+Fresh water pump,7,18,10,false,2,105,spec,measured,installed
+Watermaker,15,8,10,false,2,105,spec,measured,installed
+Refrigerator,6.5,22,10,false,2,105,guess,measured,installed
+Salon lights (LED),6,38,10,false,1,105,guess,guess,installed
+USB and 12 V outlets,10,30,10,false,1,105,guess,guess,installed
+Solar charge controller,30,20,3,false,2,105,spec,guess,planned
+Inverter (1500 W),125,6,3,false,1,105,guess,guess,planned
