@@ -1,6 +1,6 @@
 {
   "name": "wire-wright",
-  "version": "0.0.1-alpha.0",
+  "version": "0.0.2-alpha.0",
   "description": "ABYC E-11 wire gauge, ampacity, and fuse sizing for small-craft DC circuits, from a CSV circuit list",
   "type": "module",
   "bin": {
