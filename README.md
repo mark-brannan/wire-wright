@@ -3,8 +3,8 @@
 [![wire-wright web demo](.github/images/web-demo.png)](https://mark-brannan.github.io/wire-wright/)
 
 **[Try it in your browser](https://mark-brannan.github.io/wire-wright/)** —
-type in a circuit, watch the wire size and fuse update as you drag the
-length, and see which rule decided. It runs the same code as the CLI below
+edit a circuit list, watch each wire size and fuse update as you change a
+row, and see which rule decided. It runs the same code as the CLI below
 (`web/app.js` bundles `lib/calc.js` with esbuild; nothing is retyped —
 `test/web-bundle.test.mjs` proves the two agree).
 
