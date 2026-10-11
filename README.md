@@ -43,20 +43,20 @@ conductor-size lookup tables from the same document (`npm test`).
 
 ## CSV columns
 
-| column | required | meaning |
-|---|---|---|
-| `name` | yes | circuit label |
-| `amps` | yes | continuous current, A |
-| `length_ft` | yes | conductor length source → device → source (round trip), ft |
-| `drop_pct` | no | 3 (default, critical) or 10 |
-| `voltage` | no | system voltage, default 12 |
-| `engine_space` | no | true/false, default false |
-| `bundle` | no | conductors bundled together, default 1 |
-| `insulation_c` | no | insulation rating °C, default 105 |
-| `continuous` | no | default true; false uses 100% fuse target |
-| `amps_source`, `length_source` | no | `guess` / `spec` / `measured` — anything not `measured` is flagged in output |
-| `status` | no | e.g. `planned` / `installed` — non-installed flagged |
-| `notes` | no | free text, passed through |
+| column                         | required | meaning                                                                      |
+| ------------------------------ | -------- | ---------------------------------------------------------------------------- |
+| `name`                         | yes      | circuit label                                                                |
+| `amps`                         | yes      | continuous current, A                                                        |
+| `length_ft`                    | yes      | conductor length source → device → source (round trip), ft                   |
+| `drop_pct`                     | no       | 3 (default, critical) or 10                                                  |
+| `voltage`                      | no       | system voltage, default 12                                                   |
+| `engine_space`                 | no       | true/false, default false                                                    |
+| `bundle`                       | no       | conductors bundled together, default 1                                       |
+| `insulation_c`                 | no       | insulation rating °C, default 105                                            |
+| `continuous`                   | no       | default true; false uses 100% fuse target                                    |
+| `amps_source`, `length_source` | no       | `guess` / `spec` / `measured` — anything not `measured` is flagged in output |
+| `status`                       | no       | e.g. `planned` / `installed` — non-installed flagged                         |
+| `notes`                        | no       | free text, passed through                                                    |
 
 ## Limits
 
