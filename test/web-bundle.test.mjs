@@ -45,7 +45,9 @@ async function bundleApp(t) {
 // them: name, amps, length_ft, drop_pct, awg, governs, fuse, wire_ampacity,
 // actual_drop_pct, flags.
 function cliRows(file) {
-  const { status, stdout } = spawnSync('node', [path.join(root, 'bin/cli.mjs'), file], { encoding: 'utf8' });
+  const { status, stdout } = spawnSync('node', [path.join(root, 'bin/cli.mjs'), file], {
+    encoding: 'utf8',
+  });
   assert.equal(status, 0, 'the sample list sizes with no problems');
   return stdout
     .split('\n')
@@ -75,9 +77,24 @@ test('the demo sample list sizes identically in the bundle, in lib/ and in the C
 
   const cli = cliRows(samplePath);
   assert.equal(cli.length, rows.length);
-  const cols = ['name', 'amps', 'length_ft', 'drop_pct', 'awg', 'governs', 'fuse', 'wire_ampacity', 'actual_drop_pct', 'flags'];
+  const cols = [
+    'name',
+    'amps',
+    'length_ft',
+    'drop_pct',
+    'awg',
+    'governs',
+    'fuse',
+    'wire_ampacity',
+    'actual_drop_pct',
+    'flags',
+  ];
   want.out.forEach((r, i) => {
-    assert.deepEqual(cli[i], cols.map((k) => String(r[k] ?? '')), `CLI row ${i} (${r.name})`);
+    assert.deepEqual(
+      cli[i],
+      cols.map((k) => String(r[k] ?? '')),
+      `CLI row ${i} (${r.name})`,
+    );
   });
 });
 
@@ -101,18 +118,41 @@ test('the sample list shows what the demo says it shows', () => {
   const sized = rows.map((r) => sizeRow(r));
   const flags = sized.flatMap((s) => s.flags);
 
-  assert.ok(sized.some((s) => s.row.governs === 'voltage-drop'), 'a circuit set by voltage drop');
-  assert.ok(sized.some((s) => s.row.governs === 'ampacity'), 'a circuit set by ampacity');
+  assert.ok(
+    sized.some((s) => s.row.governs === 'voltage-drop'),
+    'a circuit set by voltage drop',
+  );
+  assert.ok(
+    sized.some((s) => s.row.governs === 'ampacity'),
+    'a circuit set by ampacity',
+  );
   for (const f of ['length:guess', 'amps:guess', 'planned']) assert.ok(flags.includes(f), f);
-  assert.ok(rows.some((r) => r.engine_space === 'true'), 'a circuit through an engine space');
-  assert.ok(rows.some((r) => Number(r.bundle) > 1), 'a bundled circuit');
-  assert.ok(rows.some((r) => r.drop_pct === '10') && rows.some((r) => r.drop_pct === '3'), 'both drop limits');
+  assert.ok(
+    rows.some((r) => r.engine_space === 'true'),
+    'a circuit through an engine space',
+  );
+  assert.ok(
+    rows.some((r) => Number(r.bundle) > 1),
+    'a bundled circuit',
+  );
+  assert.ok(
+    rows.some((r) => r.drop_pct === '10') && rows.some((r) => r.drop_pct === '3'),
+    'both drop limits',
+  );
 });
 
 test('the grid shows an error for a row sizeCircuit rejects, and a warning for one it sizes with a caveat', async (t) => {
   const bundled = await bundleApp(t);
 
-  const rejected = bundled.describeRow(bundled.sizeRow({ name: 'Hot', amps: '5', length_ft: '10', engine_space: 'true', insulation_c: '60' }));
+  const rejected = bundled.describeRow(
+    bundled.sizeRow({
+      name: 'Hot',
+      amps: '5',
+      length_ft: '10',
+      engine_space: 'true',
+      insulation_c: '60',
+    }),
+  );
   assert.equal(rejected.awg, '—');
   assert.equal(rejected.noteKind, 'error');
   assert.match(rejected.note, /not permitted in engine spaces/);

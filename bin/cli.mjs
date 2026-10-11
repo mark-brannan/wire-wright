@@ -43,15 +43,39 @@ function main() {
   try {
     text = readFileSync(file, 'utf8');
   } catch (e) {
-    console.error(`wire-wright: can't read ${file}: ${e.code === 'ENOENT' ? 'no such file' : e.message}`);
+    console.error(
+      `wire-wright: can't read ${file}: ${e.code === 'ENOENT' ? 'no such file' : e.message}`,
+    );
     process.exitCode = 1;
     return;
   }
 
   const { out, problems } = sizeRows(parseCSV(text));
 
-  const cols = ['name', 'amps', 'length_ft', 'drop_pct', 'awg', 'governs', 'fuse', 'wire_ampacity', 'actual_drop_pct', 'flags'];
-  const head = ['Circuit', 'Amps', 'Len (RT ft)', 'Max drop %', 'AWG', 'Governed by', 'Fuse (A)', 'Wire ampacity', 'Actual drop %', 'Flags'];
+  const cols = [
+    'name',
+    'amps',
+    'length_ft',
+    'drop_pct',
+    'awg',
+    'governs',
+    'fuse',
+    'wire_ampacity',
+    'actual_drop_pct',
+    'flags',
+  ];
+  const head = [
+    'Circuit',
+    'Amps',
+    'Len (RT ft)',
+    'Max drop %',
+    'AWG',
+    'Governed by',
+    'Fuse (A)',
+    'Wire ampacity',
+    'Actual drop %',
+    'Flags',
+  ];
   console.log('| ' + head.join(' | ') + ' |');
   console.log('|' + head.map(() => '---').join('|') + '|');
   for (const r of out) console.log('| ' + cols.map((k) => r[k] ?? '').join(' | ') + ' |');

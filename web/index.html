@@ -1,186 +1,407 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>wire-wright — DC wire size calculator</title>
-<meta name="description" content="Size a whole boat's DC panel at once per ABYC E-11: wire gauge, fuse, which rule decided, and which inputs are still guesses." />
-<style>
-  :root {
-    color-scheme: light dark;
-    --muted: #666;
-    --line: #ccc;
-    --tint: rgba(127, 127, 127, 0.1);
-    --warn: #b45309;
-    --error: #b91c1c;
-    --guess-bg: #fef3c7; --guess-fg: #92400e;
-    --spec-bg: #dbeafe; --spec-fg: #1e40af;
-    --status-bg: #e5e7eb; --status-fg: #374151;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --muted: #9ca3af;
-      --line: #444;
-      --warn: #fbbf24;
-      --error: #f87171;
-      --guess-bg: #78350f; --guess-fg: #fde68a;
-      --spec-bg: #1e3a8a; --spec-fg: #bfdbfe;
-      --status-bg: #374151; --status-fg: #e5e7eb;
-    }
-  }
-  body {
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    max-width: 90rem;
-    margin: 0 auto;
-    padding: 1.5rem 1rem 3rem;
-    line-height: 1.5;
-  }
-  h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
-  h2 { font-size: 1.1rem; margin: 2rem 0 0.25rem; }
-  p.lede { color: var(--muted); margin-top: 0; }
-  p.note-text { color: var(--muted); font-size: 0.9rem; margin: 0.25rem 0 0.75rem; }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>wire-wright — DC wire size calculator</title>
+    <meta
+      name="description"
+      content="Size a whole boat's DC panel at once per ABYC E-11: wire gauge, fuse, which rule decided, and which inputs are still guesses."
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --muted: #666;
+        --line: #ccc;
+        --tint: rgba(127, 127, 127, 0.1);
+        --warn: #b45309;
+        --error: #b91c1c;
+        --guess-bg: #fef3c7;
+        --guess-fg: #92400e;
+        --spec-bg: #dbeafe;
+        --spec-fg: #1e40af;
+        --status-bg: #e5e7eb;
+        --status-fg: #374151;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --muted: #9ca3af;
+          --line: #444;
+          --warn: #fbbf24;
+          --error: #f87171;
+          --guess-bg: #78350f;
+          --guess-fg: #fde68a;
+          --spec-bg: #1e3a8a;
+          --spec-fg: #bfdbfe;
+          --status-bg: #374151;
+          --status-fg: #e5e7eb;
+        }
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        max-width: 90rem;
+        margin: 0 auto;
+        padding: 1.5rem 1rem 3rem;
+        line-height: 1.5;
+      }
+      h1 {
+        font-size: 1.4rem;
+        margin-bottom: 0.25rem;
+      }
+      h2 {
+        font-size: 1.1rem;
+        margin: 2rem 0 0.25rem;
+      }
+      p.lede {
+        color: var(--muted);
+        margin-top: 0;
+      }
+      p.note-text {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 0.25rem 0 0.75rem;
+      }
 
-  .gridwrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
-  table.grid { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
-  .grid th {
-    text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--muted);
-    padding: 0.5rem 0.2rem; white-space: nowrap; border-bottom: 1px solid var(--line);
-  }
-  .grid td { padding: 0.15rem 0.1rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
-  .grid th.name, .grid td.name { position: sticky; left: 0; background: Canvas; z-index: 1; }
-  .grid input[type="text"] { width: 10.5rem; }
-  .grid input[type="number"] { width: 3.4rem; }
-  .grid input, .grid select { font: inherit; padding: 0.15rem 0.2rem; box-sizing: border-box; }
-  .grid input[type="checkbox"] { width: 1.1rem; height: 1.1rem; display: block; margin: 0 auto; }
-  .grid td.out { background: var(--tint); font-weight: 600; white-space: nowrap; padding: 0.15rem 0.5rem; }
-  .grid td.out.num { text-align: right; }
-  .grid th.out { background: var(--tint); }
-  .grid td.flags { font-weight: 400; }
-  .brief { font-size: 0.75rem; font-weight: 600; color: var(--muted); padding: 0.1rem 0.25rem 0; min-height: 1.1em; }
-  @media (min-width: 1100px) { .brief { display: none; } }
-  .flagbox { width: 11rem; white-space: normal; }
-  .grid tr.note td { padding: 0.15rem 0.6rem 0.4rem; font-size: 0.85rem; border-bottom: 1px solid var(--line); }
-  .grid tr.note td.error { color: var(--error); }
-  .grid tr.note td.warning { color: var(--warn); font-weight: 600; }
-  button.remove {
-    font: inherit; line-height: 1; padding: 0.1rem 0.45rem; cursor: pointer;
-    background: none; color: var(--muted); border: 1px solid transparent; border-radius: 4px;
-  }
-  button.remove:hover, button.remove:focus-visible { color: var(--error); border-color: currentColor; }
-  button.add { font: inherit; padding: 0.35rem 0.8rem; margin-top: 0.75rem; cursor: pointer; }
+      .gridwrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+      table.grid {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.85rem;
+      }
+      .grid th {
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--muted);
+        padding: 0.5rem 0.2rem;
+        white-space: nowrap;
+        border-bottom: 1px solid var(--line);
+      }
+      .grid td {
+        padding: 0.15rem 0.1rem;
+        border-bottom: 1px solid var(--line);
+        vertical-align: middle;
+      }
+      .grid th.name,
+      .grid td.name {
+        position: sticky;
+        left: 0;
+        background: Canvas;
+        z-index: 1;
+      }
+      .grid input[type='text'] {
+        width: 10.5rem;
+      }
+      .grid input[type='number'] {
+        width: 3.4rem;
+      }
+      .grid input,
+      .grid select {
+        font: inherit;
+        padding: 0.15rem 0.2rem;
+        box-sizing: border-box;
+      }
+      .grid input[type='checkbox'] {
+        width: 1.1rem;
+        height: 1.1rem;
+        display: block;
+        margin: 0 auto;
+      }
+      .grid td.out {
+        background: var(--tint);
+        font-weight: 600;
+        white-space: nowrap;
+        padding: 0.15rem 0.5rem;
+      }
+      .grid td.out.num {
+        text-align: right;
+      }
+      .grid th.out {
+        background: var(--tint);
+      }
+      .grid td.flags {
+        font-weight: 400;
+      }
+      .brief {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--muted);
+        padding: 0.1rem 0.25rem 0;
+        min-height: 1.1em;
+      }
+      @media (min-width: 1100px) {
+        .brief {
+          display: none;
+        }
+      }
+      .flagbox {
+        width: 11rem;
+        white-space: normal;
+      }
+      .grid tr.note td {
+        padding: 0.15rem 0.6rem 0.4rem;
+        font-size: 0.85rem;
+        border-bottom: 1px solid var(--line);
+      }
+      .grid tr.note td.error {
+        color: var(--error);
+      }
+      .grid tr.note td.warning {
+        color: var(--warn);
+        font-weight: 600;
+      }
+      button.remove {
+        font: inherit;
+        line-height: 1;
+        padding: 0.1rem 0.45rem;
+        cursor: pointer;
+        background: none;
+        color: var(--muted);
+        border: 1px solid transparent;
+        border-radius: 4px;
+      }
+      button.remove:hover,
+      button.remove:focus-visible {
+        color: var(--error);
+        border-color: currentColor;
+      }
+      button.add {
+        font: inherit;
+        padding: 0.35rem 0.8rem;
+        margin-top: 0.75rem;
+        cursor: pointer;
+      }
 
-  .flag {
-    display: inline-block; font-size: 0.75rem; font-weight: 600; line-height: 1.4;
-    padding: 0.05rem 0.45rem; margin-right: 0.25rem; border-radius: 999px; cursor: help;
-  }
-  .flag-guess { background: var(--guess-bg); color: var(--guess-fg); }
-  .flag-spec { background: var(--spec-bg); color: var(--spec-fg); }
-  .flag-status { background: var(--status-bg); color: var(--status-fg); }
-  dl.legend { font-size: 0.85rem; color: var(--muted); margin: 0.75rem 0 0; }
-  dl.legend dt { float: left; clear: left; margin-right: 0.5rem; }
-  dl.legend dd { margin: 0 0 0.3rem 0; }
+      .flag {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        line-height: 1.4;
+        padding: 0.05rem 0.45rem;
+        margin-right: 0.25rem;
+        border-radius: 999px;
+        cursor: help;
+      }
+      .flag-guess {
+        background: var(--guess-bg);
+        color: var(--guess-fg);
+      }
+      .flag-spec {
+        background: var(--spec-bg);
+        color: var(--spec-fg);
+      }
+      .flag-status {
+        background: var(--status-bg);
+        color: var(--status-fg);
+      }
+      dl.legend {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin: 0.75rem 0 0;
+      }
+      dl.legend dt {
+        float: left;
+        clear: left;
+        margin-right: 0.5rem;
+      }
+      dl.legend dd {
+        margin: 0 0 0.3rem 0;
+      }
 
-  details.single { margin-top: 2rem; max-width: 640px; }
-  details.single summary { cursor: pointer; font-weight: 600; }
-  fieldset { border: 1px solid var(--line); border-radius: 8px; padding: 1rem; margin: 1rem 0 1.5rem; }
-  legend { padding: 0 0.4rem; font-weight: 600; }
-  label { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 0.6rem 0; }
-  fieldset input[type="number"] { width: 6rem; font-size: 1rem; padding: 0.25rem 0.4rem; }
-  .checkrow { justify-content: flex-start; gap: 0.5rem; }
-  .result {
-    border: 2px solid currentColor;
-    border-radius: 10px;
-    padding: 1rem 1.25rem;
-    display: flex;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-  }
-  .result .stat { min-width: 6rem; }
-  .result .stat .label { font-size: 0.8rem; color: var(--muted); }
-  .result .stat .value { font-size: 1.8rem; font-weight: 700; }
-  #outSentence { margin-top: 0.75rem; font-size: 1.05rem; }
-  #outWarning { color: var(--warn); font-weight: 600; }
-  .provenance { margin-top: 2rem; font-size: 0.85rem; color: var(--muted); max-width: 640px; }
-  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  a { color: inherit; }
-</style>
-</head>
-<body>
-  <h1>wire-wright</h1>
-  <p class="lede">Size a whole boat's DC panel at once: wire, fuse, which rule decided each circuit, and which inputs are still guesses.</p>
+      details.single {
+        margin-top: 2rem;
+        max-width: 640px;
+      }
+      details.single summary {
+        cursor: pointer;
+        font-weight: 600;
+      }
+      fieldset {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0 1.5rem;
+      }
+      legend {
+        padding: 0 0.4rem;
+        font-weight: 600;
+      }
+      label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin: 0.6rem 0;
+      }
+      fieldset input[type='number'] {
+        width: 6rem;
+        font-size: 1rem;
+        padding: 0.25rem 0.4rem;
+      }
+      .checkrow {
+        justify-content: flex-start;
+        gap: 0.5rem;
+      }
+      .result {
+        border: 2px solid currentColor;
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+      }
+      .result .stat {
+        min-width: 6rem;
+      }
+      .result .stat .label {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .result .stat .value {
+        font-size: 1.8rem;
+        font-weight: 700;
+      }
+      #outSentence {
+        margin-top: 0.75rem;
+        font-size: 1.05rem;
+      }
+      #outWarning {
+        color: var(--warn);
+        font-weight: 600;
+      }
+      .provenance {
+        margin-top: 2rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+        max-width: 640px;
+      }
+      .sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      a {
+        color: inherit;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>wire-wright</h1>
+    <p class="lede">
+      Size a whole boat's DC panel at once: wire, fuse, which rule decided each circuit, and which
+      inputs are still guesses.
+    </p>
 
-  <p class="note-text">
-    The list below is a <strong>synthetic</strong> 12 V panel for a plausible cruising sailboat, not a real
-    boat's. Change any cell and the sizing on that row updates. Lengths are round trip (source to device and back).
-  </p>
+    <p class="note-text">
+      The list below is a <strong>synthetic</strong> 12 V panel for a plausible cruising sailboat,
+      not a real boat's. Change any cell and the sizing on that row updates. Lengths are round trip
+      (source to device and back).
+    </p>
 
-  <div class="gridwrap">
-    <table class="grid">
-      <thead>
-        <tr>
-          <th class="name" scope="col">Circuit</th>
-          <th scope="col">Amps</th>
-          <th scope="col" title="Round-trip length, source to device and back, in feet">Len (RT ft)</th>
-          <th scope="col">Max drop</th>
-          <th scope="col">Engine</th>
-          <th scope="col">Bundled</th>
-          <th scope="col">Insulation</th>
-          <th scope="col">Amps src</th>
-          <th scope="col">Length src</th>
-          <th scope="col">Status</th>
-          <th class="out" scope="col">Wire AWG</th>
-          <th class="out" scope="col">Fuse</th>
-          <th class="out" scope="col">Decided by</th>
-          <th class="out" scope="col">Flags</th>
-          <th scope="col"><span class="sr">Remove</span></th>
-        </tr>
-      </thead>
-      <tbody id="gridBody"></tbody>
-    </table>
-  </div>
-  <button type="button" class="add" id="addCircuit">Add a circuit</button>
-
-  <dl class="legend">
-    <dt><span class="flag flag-guess">length:guess</span> <span class="flag flag-spec">length:spec</span></dt>
-    <dd>The run is not measured on the boat yet. Measure it before you buy wire.</dd>
-    <dt><span class="flag flag-guess">amps:guess</span></dt>
-    <dd>The load current is a guess. A nameplate rating is believable; a hope is not.</dd>
-    <dt><span class="flag flag-status">planned</span></dt>
-    <dd>Not installed yet.</dd>
-  </dl>
-
-  <details class="single">
-    <summary>Just one circuit?</summary>
-    <fieldset>
-      <legend>Circuit</legend>
-      <label for="amps">Current (A)<input type="number" id="amps" value="20" min="0.1" step="0.1" /></label>
-      <label for="lengthFt">Round-trip length (ft)<input type="number" id="lengthFt" value="18" min="0.1" step="0.5" /></label>
-      <label for="voltage">System voltage
-        <select id="voltage"><option value="12" selected>12V</option><option value="24">24V</option></select>
-      </label>
-      <label class="checkrow" for="critical"><input type="checkbox" id="critical" checked /> Critical circuit (3% drop, not 10%)</label>
-      <label class="checkrow" for="engineSpace"><input type="checkbox" id="engineSpace" /> Passes through an engine space</label>
-      <label for="bundle">Bundled conductors<input type="number" id="bundle" value="1" min="1" step="1" /></label>
-    </fieldset>
-
-    <div class="result">
-      <div class="stat"><div class="label">Wire size</div><div class="value" id="outAwg">—</div></div>
-      <div class="stat"><div class="label">Fuse</div><div class="value" id="outFuse">—</div></div>
+    <div class="gridwrap">
+      <table class="grid">
+        <thead>
+          <tr>
+            <th class="name" scope="col">Circuit</th>
+            <th scope="col">Amps</th>
+            <th scope="col" title="Round-trip length, source to device and back, in feet">
+              Len (RT ft)
+            </th>
+            <th scope="col">Max drop</th>
+            <th scope="col">Engine</th>
+            <th scope="col">Bundled</th>
+            <th scope="col">Insulation</th>
+            <th scope="col">Amps src</th>
+            <th scope="col">Length src</th>
+            <th scope="col">Status</th>
+            <th class="out" scope="col">Wire AWG</th>
+            <th class="out" scope="col">Fuse</th>
+            <th class="out" scope="col">Decided by</th>
+            <th class="out" scope="col">Flags</th>
+            <th scope="col"><span class="sr">Remove</span></th>
+          </tr>
+        </thead>
+        <tbody id="gridBody"></tbody>
+      </table>
     </div>
-    <p id="outSentence"></p>
-    <p id="outWarning"></p>
-  </details>
+    <button type="button" class="add" id="addCircuit">Add a circuit</button>
 
-  <p class="provenance">
-    Same math as <code>npx wire-wright</code>, from the ABYC E-11 tables in the
-    <a href="https://github.com/mark-brannan/ampacity">ampacity</a> data package
-    (republished with ABYC's permission at
-    <a href="https://boathowto.com/wiresize/wiresize_tables_abyc.pdf">boathowto.com</a>).
-    DC, copper only, AWG 18 – 4/0. Sizing is per circuit: it does not sum loads or check fuse interrupt ratings.
-    To run your own list, use the
-    <a href="https://github.com/mark-brannan/wire-wright">command-line tool</a>.
-  </p>
+    <dl class="legend">
+      <dt>
+        <span class="flag flag-guess">length:guess</span>
+        <span class="flag flag-spec">length:spec</span>
+      </dt>
+      <dd>The run is not measured on the boat yet. Measure it before you buy wire.</dd>
+      <dt><span class="flag flag-guess">amps:guess</span></dt>
+      <dd>The load current is a guess. A nameplate rating is believable; a hope is not.</dd>
+      <dt><span class="flag flag-status">planned</span></dt>
+      <dd>Not installed yet.</dd>
+    </dl>
 
-  <script src="bundle.js"></script>
-</body>
+    <details class="single">
+      <summary>Just one circuit?</summary>
+      <fieldset>
+        <legend>Circuit</legend>
+        <label for="amps"
+          >Current (A)<input type="number" id="amps" value="20" min="0.1" step="0.1"
+        /></label>
+        <label for="lengthFt"
+          >Round-trip length (ft)<input type="number" id="lengthFt" value="18" min="0.1" step="0.5"
+        /></label>
+        <label for="voltage"
+          >System voltage
+          <select id="voltage">
+            <option value="12" selected>12V</option>
+            <option value="24">24V</option>
+          </select>
+        </label>
+        <label class="checkrow" for="critical"
+          ><input type="checkbox" id="critical" checked /> Critical circuit (3% drop, not
+          10%)</label
+        >
+        <label class="checkrow" for="engineSpace"
+          ><input type="checkbox" id="engineSpace" /> Passes through an engine space</label
+        >
+        <label for="bundle"
+          >Bundled conductors<input type="number" id="bundle" value="1" min="1" step="1"
+        /></label>
+      </fieldset>
+
+      <div class="result">
+        <div class="stat">
+          <div class="label">Wire size</div>
+          <div class="value" id="outAwg">—</div>
+        </div>
+        <div class="stat">
+          <div class="label">Fuse</div>
+          <div class="value" id="outFuse">—</div>
+        </div>
+      </div>
+      <p id="outSentence"></p>
+      <p id="outWarning"></p>
+    </details>
+
+    <p class="provenance">
+      Same math as <code>npx wire-wright</code>, from the ABYC E-11 tables in the
+      <a href="https://github.com/mark-brannan/ampacity">ampacity</a> data package (republished with
+      ABYC's permission at
+      <a href="https://boathowto.com/wiresize/wiresize_tables_abyc.pdf">boathowto.com</a>). DC,
+      copper only, AWG 18 – 4/0. Sizing is per circuit: it does not sum loads or check fuse
+      interrupt ratings. To run your own list, use the
+      <a href="https://github.com/mark-brannan/wire-wright">command-line tool</a>.
+    </p>
+
+    <script src="bundle.js"></script>
+  </body>
 </html>
