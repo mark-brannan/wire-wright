@@ -6,10 +6,10 @@ This package is alpha and maintained as a single moving line. Only the latest
 version published to npm gets fixes; there are no maintenance branches, and a
 pre-1.0 release may change behaviour in a patch.
 
-| Version | Supported |
-| ------- | --------- |
-| latest `0.0.x-alpha` on [npm](https://www.npmjs.com/package/wire-wright) | yes |
-| anything older | no — upgrade first |
+| Version                                                                  | Supported          |
+| ------------------------------------------------------------------------ | ------------------ |
+| latest `0.0.x-alpha` on [npm](https://www.npmjs.com/package/wire-wright) | yes                |
+| anything older                                                           | no — upgrade first |
 
 If that is too loose for you, pin an exact version and read the release notes
 before moving. It will tighten at 1.0.
@@ -57,7 +57,7 @@ up.
 - ABYC E-11 itself, and whether its guidance suits your installation. This tool
   is informational and is not a substitute for a qualified marine electrician
   or your surveyor.
-- The things the README's *Limits* section says this does not do — summing
+- The things the README's _Limits_ section says this does not do — summing
   loads, panel totals, fuse interrupt ratings. Those are known gaps, and an
   issue asking for one is a feature request, not a vulnerability.
 

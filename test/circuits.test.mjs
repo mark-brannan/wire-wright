@@ -10,8 +10,14 @@ import { parseCSV, flagsFor, sizingArgs, sizeRow, sizeRows } from '../lib/circui
 test('a row carrying only the required columns is sized with the documented defaults', () => {
   const row = { name: 'Pump', amps: '20', length_ft: '18' };
   assert.deepEqual(sizingArgs(row), {
-    amps: 20, lengthFt: 18, dropPct: 3, voltage: 12,
-    insulationC: 105, engineSpace: false, bundleCount: 1, continuous: true,
+    amps: 20,
+    lengthFt: 18,
+    dropPct: 3,
+    voltage: 12,
+    insulationC: 105,
+    engineSpace: false,
+    bundleCount: 1,
+    continuous: true,
   });
   const s = sizeRow(row);
   // 10.75 x 20 A x 18 ft / (3% of 12 V) = 10,750 circular mils: past 10 AWG
@@ -23,10 +29,24 @@ test('a row carrying only the required columns is sized with the documented defa
 
 test('every optional column reaches sizeCircuit', () => {
   const row = {
-    name: 'Windlass', amps: '15', length_ft: '40', drop_pct: '3', voltage: '24',
-    engine_space: 'no', bundle: '3', insulation_c: '105', continuous: 'false',
+    name: 'Windlass',
+    amps: '15',
+    length_ft: '40',
+    drop_pct: '3',
+    voltage: '24',
+    engine_space: 'no',
+    bundle: '3',
+    insulation_c: '105',
+    continuous: 'false',
   };
-  const want = sizeCircuit({ amps: 15, lengthFt: 40, dropPct: 3, voltage: 24, bundleCount: 3, continuous: false });
+  const want = sizeCircuit({
+    amps: 15,
+    lengthFt: 40,
+    dropPct: 3,
+    voltage: 24,
+    bundleCount: 3,
+    continuous: false,
+  });
   assert.equal(sizeRow(row).row.awg, want.awg);
   assert.equal(sizeRow(row).row.fuse, want.fuse);
   assert.equal(sizeRow(row).row.wire_ampacity, want.wireAmpacity);
@@ -38,12 +58,22 @@ test('engine_space accepts true, yes, y and 1, and nothing else', () => {
     assert.equal(sizingArgs({ amps: '1', length_ft: '1', engine_space: v }).engineSpace, true, v);
   }
   for (const v of ['false', 'no', '0', '', undefined]) {
-    assert.equal(sizingArgs({ amps: '1', length_ft: '1', engine_space: v }).engineSpace, false, String(v));
+    assert.equal(
+      sizingArgs({ amps: '1', length_ft: '1', engine_space: v }).engineSpace,
+      false,
+      String(v),
+    );
   }
 });
 
 test('published case: 30 A, 10 ft, engine space is 10 AWG on a 40 A fuse', () => {
-  const s = sizeRow({ name: 'Blower', amps: '30', length_ft: '10', drop_pct: '3', engine_space: 'true' });
+  const s = sizeRow({
+    name: 'Blower',
+    amps: '30',
+    length_ft: '10',
+    drop_pct: '3',
+    engine_space: 'true',
+  });
   assert.equal(s.row.awg, '10');
   assert.equal(s.row.fuse, 40);
 });
@@ -52,7 +82,13 @@ test('a bundled short run is set by ampacity, not voltage drop', () => {
   // 15 A, 8 ft at 10% needs only 18 AWG for voltage drop, but two bundled
   // conductors carry 0.7 of table ampacity: 16 AWG is the heat minimum, and a
   // 20 A fuse (125% of 15 A, rounded up) then forces 14 AWG (24.5 A).
-  const s = sizeRow({ name: 'Watermaker', amps: '15', length_ft: '8', drop_pct: '10', bundle: '2' });
+  const s = sizeRow({
+    name: 'Watermaker',
+    amps: '15',
+    length_ft: '8',
+    drop_pct: '10',
+    bundle: '2',
+  });
   assert.equal(s.row.governs, 'ampacity');
   assert.equal(s.row.awg, '14');
   assert.equal(s.row.fuse, 20);
@@ -71,11 +107,17 @@ test('flags: nothing measured and nothing declared flags both inputs', () => {
 
 test('flags: a measured length with a nameplate current is clean', () => {
   assert.deepEqual(flagsFor({ length_source: 'measured', amps_source: 'spec' }), []);
-  assert.deepEqual(flagsFor({ length_source: 'measured', amps_source: 'measured', status: 'installed' }), []);
+  assert.deepEqual(
+    flagsFor({ length_source: 'measured', amps_source: 'measured', status: 'installed' }),
+    [],
+  );
 });
 
 test('flags: a spec length is flagged, a spec current is not, and a status other than installed passes through', () => {
-  assert.deepEqual(flagsFor({ length_source: 'spec', amps_source: 'spec', status: 'planned' }), ['length:spec', 'planned']);
+  assert.deepEqual(flagsFor({ length_source: 'spec', amps_source: 'spec', status: 'planned' }), [
+    'length:spec',
+    'planned',
+  ]);
   assert.deepEqual(flagsFor({ length_source: 'measured', amps_source: 'guess' }), ['amps:guess']);
 });
 
@@ -86,7 +128,13 @@ test('a rejected row comes back with its error and no output record', () => {
 });
 
 test('a combination E-11 does not permit is an error on that row, not a throw', () => {
-  const s = sizeRow({ name: 'Hot', amps: '5', length_ft: '10', engine_space: 'true', insulation_c: '60' });
+  const s = sizeRow({
+    name: 'Hot',
+    amps: '5',
+    length_ft: '10',
+    engine_space: 'true',
+    insulation_c: '60',
+  });
   assert.equal(s.row, null);
   assert.match(s.error, /60°C insulation is not permitted in engine spaces/);
 });
@@ -97,7 +145,10 @@ test('sizeRows keeps sized rows in order and reports rejections and warnings by 
     { name: 'Bad', amps: '', length_ft: '10' },
     { name: 'Big', amps: '400', length_ft: '60' },
   ]);
-  assert.deepEqual(out.map((r) => r.name), ['Light', 'Big']);
+  assert.deepEqual(
+    out.map((r) => r.name),
+    ['Light', 'Big'],
+  );
   assert.equal(out[1].awg, null);
   assert.deepEqual(problems, [
     'Bad: amps and lengthFt must be positive',
@@ -106,7 +157,13 @@ test('sizeRows keeps sized rows in order and reports rejections and warnings by 
 });
 
 test('an output record echoes amps and length as typed and joins flags with spaces', () => {
-  const { row } = sizeRow({ name: 'Radio', amps: '6.0', length_ft: '28', length_source: 'guess', amps_source: 'spec' });
+  const { row } = sizeRow({
+    name: 'Radio',
+    amps: '6.0',
+    length_ft: '28',
+    length_source: 'guess',
+    amps_source: 'spec',
+  });
   assert.equal(row.amps, '6.0');
   assert.equal(row.length_ft, '28');
   assert.equal(row.drop_pct, '3');

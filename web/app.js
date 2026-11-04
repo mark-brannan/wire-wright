@@ -67,7 +67,11 @@ const FLAG_HELP = {
 
 // The grid's input columns, in order. `key` is the CSV column the cell edits,
 // so a row is always a valid CSV row for lib/circuits.js.
-const SOURCES = [['guess', 'guess'], ['spec', 'spec'], ['measured', 'measured']];
+const SOURCES = [
+  ['guess', 'guess'],
+  ['spec', 'spec'],
+  ['measured', 'measured'],
+];
 const INSULATION = Object.keys(AMPACITY_OUTSIDE)
   .sort((a, b) => a - b)
   .map((c) => [c, `${c}°C`]);
@@ -75,20 +79,44 @@ const INPUTS = [
   { key: 'name', label: 'Circuit', kind: 'text', cls: 'name' },
   { key: 'amps', label: 'Amps', kind: 'number', min: 0, step: 0.1 },
   { key: 'length_ft', label: 'Length (RT ft)', kind: 'number', min: 0, step: 0.5 },
-  { key: 'drop_pct', label: 'Max drop', kind: 'select', options: [['3', '3%'], ['10', '10%']] },
+  {
+    key: 'drop_pct',
+    label: 'Max drop',
+    kind: 'select',
+    options: [
+      ['3', '3%'],
+      ['10', '10%'],
+    ],
+  },
   { key: 'engine_space', label: 'Engine space', kind: 'check' },
   { key: 'bundle', label: 'Bundled', kind: 'number', min: 1, step: 1 },
   { key: 'insulation_c', label: 'Insulation', kind: 'select', options: INSULATION },
   { key: 'amps_source', label: 'Amps source', kind: 'select', options: SOURCES },
   { key: 'length_source', label: 'Length source', kind: 'select', options: SOURCES },
-  { key: 'status', label: 'Status', kind: 'select', options: [['installed', 'installed'], ['planned', 'planned']] },
+  {
+    key: 'status',
+    label: 'Status',
+    kind: 'select',
+    options: [
+      ['installed', 'installed'],
+      ['planned', 'planned'],
+    ],
+  },
 ];
 // Four result columns and the remove button follow the inputs (web/index.html).
 const COLUMNS = INPUTS.length + 4 + 1;
 
 const NEW_ROW = {
-  name: 'New circuit', amps: '5', length_ft: '20', drop_pct: '3', engine_space: 'false', bundle: '1',
-  insulation_c: '105', amps_source: 'guess', length_source: 'guess', status: 'planned',
+  name: 'New circuit',
+  amps: '5',
+  length_ft: '20',
+  drop_pct: '3',
+  engine_space: 'false',
+  bundle: '1',
+  insulation_c: '105',
+  amps_source: 'guess',
+  length_source: 'guess',
+  status: 'planned',
 };
 
 function h(tag, props = {}, ...children) {
@@ -106,7 +134,11 @@ function control(col, row, onChange) {
   const common = { 'aria-label': col.label };
   let node;
   if (col.kind === 'select') {
-    node = h('select', common, ...col.options.map(([value, text]) => h('option', { value, textContent: text })));
+    node = h(
+      'select',
+      common,
+      ...col.options.map(([value, text]) => h('option', { value, textContent: text })),
+    );
     // A value the list does not offer (a CSV `status` of `purchased`, say)
     // gets its own option, so the select never shows other than what was sized.
     if (!col.options.some(([value]) => value === row[col.key])) {
@@ -123,7 +155,9 @@ function control(col, row, onChange) {
       node.inputMode = 'decimal';
     }
   }
-  node.addEventListener('input', () => onChange(col.kind === 'check' ? String(node.checked) : node.value));
+  node.addEventListener('input', () =>
+    onChange(col.kind === 'check' ? String(node.checked) : node.value),
+  );
   return node;
 }
 
@@ -149,28 +183,59 @@ function initGrid() {
       out.awg.textContent = d.awg;
       out.fuse.textContent = d.fuse;
       out.rule.textContent = d.rule;
-      out.flags.replaceChildren(h('div', { class: 'flagbox' }, ...d.flags.map((f) => {
-        const kind = f.endsWith(':guess') ? 'guess' : f.includes(':') ? 'spec' : 'status';
-        return h('span', { class: `flag flag-${kind}`, textContent: f, title: FLAG_HELP[f] ?? '' });
-      })));
+      out.flags.replaceChildren(
+        h(
+          'div',
+          { class: 'flagbox' },
+          ...d.flags.map((f) => {
+            const kind = f.endsWith(':guess') ? 'guess' : f.includes(':') ? 'spec' : 'status';
+            return h('span', {
+              class: `flag flag-${kind}`,
+              textContent: f,
+              title: FLAG_HELP[f] ?? '',
+            });
+          }),
+        ),
+      );
       brief.textContent = d.fuse === '—' ? '' : `${d.awg} AWG, ${d.fuse} fuse`;
       noteCell.textContent = d.note;
       noteCell.className = d.noteKind;
       noteRow.hidden = d.note === '';
     }
 
-    const remove = h('button', { type: 'button', class: 'remove', textContent: '×', title: 'Remove this circuit' });
+    const remove = h('button', {
+      type: 'button',
+      class: 'remove',
+      textContent: '×',
+      title: 'Remove this circuit',
+    });
     remove.setAttribute('aria-label', 'Remove this circuit');
-    remove.addEventListener('click', () => { tr.remove(); noteRow.remove(); });
+    remove.addEventListener('click', () => {
+      tr.remove();
+      noteRow.remove();
+    });
 
-    const tr = h('tr', {},
+    const tr = h(
+      'tr',
+      {},
       ...INPUTS.map((col) => {
-        const cell = h('td', { class: col.cls ?? '' }, control(col, row, (v) => { row[col.key] = v; refresh(); }));
+        const cell = h(
+          'td',
+          { class: col.cls ?? '' },
+          control(col, row, (v) => {
+            row[col.key] = v;
+            refresh();
+          }),
+        );
         if (col.key === 'name') cell.append(brief);
         return cell;
       }),
-      out.awg, out.fuse, out.rule, out.flags,
-      h('td', {}, remove));
+      out.awg,
+      out.fuse,
+      out.rule,
+      out.flags,
+      h('td', {}, remove),
+    );
     body.append(tr, noteRow);
     refresh();
     return tr;
@@ -194,7 +259,12 @@ function initCalculator() {
     engineSpace: $('engineSpace'),
     bundle: $('bundle'),
   };
-  const out = { awg: $('outAwg'), fuse: $('outFuse'), sentence: $('outSentence'), warning: $('outWarning') };
+  const out = {
+    awg: $('outAwg'),
+    fuse: $('outFuse'),
+    sentence: $('outSentence'),
+    warning: $('outWarning'),
+  };
 
   function update() {
     const r = resultFor({

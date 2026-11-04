@@ -10,21 +10,36 @@ const fixtures = require('ampacity/fixtures/abyc-fixtures.json');
 
 test('voltage drop matches ABYC lookup-table fixtures', () => {
   for (const c of fixtures.voltage_drop) {
-    const got = awgForVoltageDrop({ amps: c.amps, lengthFt: c.length_ft, dropPct: c.drop_pct, voltage: c.voltage }).awg;
+    const got = awgForVoltageDrop({
+      amps: c.amps,
+      lengthFt: c.length_ft,
+      dropPct: c.drop_pct,
+      voltage: c.voltage,
+    }).awg;
     assert.equal(got, c.awg, `${c.amps}A @ ${c.length_ft}ft @ ${c.drop_pct}%`);
   }
 });
 
 test('ampacity matches E-11 Table 6A fixtures', () => {
   for (const c of fixtures.ampacity) {
-    const got = ampacity(c.awg, { insulationC: c.insulation_c, engineSpace: c.engine_space, bundleCount: c.bundle });
-    assert.equal(Math.round(got * 10) / 10, c.amps, `${c.awg} AWG ${c.insulation_c}C engine=${c.engine_space} bundle=${c.bundle}`);
+    const got = ampacity(c.awg, {
+      insulationC: c.insulation_c,
+      engineSpace: c.engine_space,
+      bundleCount: c.bundle,
+    });
+    assert.equal(
+      Math.round(got * 10) / 10,
+      c.amps,
+      `${c.awg} AWG ${c.insulation_c}C engine=${c.engine_space} bundle=${c.bundle}`,
+    );
   }
 });
 
 test('not-permitted combinations throw', () => {
   for (const c of fixtures.not_permitted) {
-    assert.throws(() => ampacity('12', { insulationC: c.insulation_c, engineSpace: c.engine_space }));
+    assert.throws(() =>
+      ampacity('12', { insulationC: c.insulation_c, engineSpace: c.engine_space }),
+    );
   }
 });
 
