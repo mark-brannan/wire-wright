@@ -9,3 +9,6 @@ heading is the UTC stamp, so `agent_decisions.md#<stamp>` links one entry.
 
 ### 20261117t213757z
 - Issue 7 names no leaning renderer option; the stub takes (b), rendering in the demo page, as the smallest and most reversible of the three Undo: delete web/diagram.js and its hooks in web/app.js and web/index.html ([#7](https://github.com/mark-brannan/wire-wright/issues/7)) (no PR, branch claude/circuit-table-demo)
+
+### 20261117t213802z
+- Diagram draws the positive side only (battery, bus, fuse, run, load), dashed for planned and amber for unmeasured runs, reusing the page's existing colour variables Undo: revert the diagram section in web/index.html ([#7](https://github.com/mark-brannan/wire-wright/issues/7)) (no PR, branch claude/circuit-table-demo)
