@@ -9,8 +9,10 @@ import { sizeCircuit } from '../lib/calc.js';
 import { AMPACITY_OUTSIDE } from '../lib/tables.js';
 import { parseCSV, sizeRow, sizeRows, isTrue } from '../lib/circuits.js';
 import SAMPLE_CSV from './sample-circuits.csv';
+// A stub: where the diagram renderer lives is still open (issue #7).
+import { diagramSVG } from './diagram.js';
 
-export { sizeCircuit, parseCSV, sizeRow, sizeRows };
+export { sizeCircuit, parseCSV, sizeRow, sizeRows, diagramSVG };
 
 // The sample circuit list, as CSV-shaped rows (see web/sample-circuits.csv).
 export const sampleRows = () => parseCSV(SAMPLE_CSV);
@@ -130,8 +132,15 @@ function control(col, row, onChange) {
 function initGrid() {
   const body = document.getElementById('gridBody');
   const addButton = document.getElementById('addCircuit');
+  const diagram = document.getElementById('diagram');
+  // The grid's rows, in grid order, so the diagram redraws from the same data.
+  const rows = new Set();
+  const redraw = () => {
+    diagram.innerHTML = diagramSVG([...rows].map((row) => ({ row, sized: sizeRow(row) })));
+  };
 
   function addRow(row) {
+    rows.add(row);
     const out = {
       awg: h('td', { class: 'out num' }),
       fuse: h('td', { class: 'out num' }),
@@ -157,11 +166,12 @@ function initGrid() {
       noteCell.textContent = d.note;
       noteCell.className = d.noteKind;
       noteRow.hidden = d.note === '';
+      redraw();
     }
 
     const remove = h('button', { type: 'button', class: 'remove', textContent: '×', title: 'Remove this circuit' });
     remove.setAttribute('aria-label', 'Remove this circuit');
-    remove.addEventListener('click', () => { tr.remove(); noteRow.remove(); });
+    remove.addEventListener('click', () => { tr.remove(); noteRow.remove(); rows.delete(row); redraw(); });
 
     const tr = h('tr', {},
       ...INPUTS.map((col) => {
