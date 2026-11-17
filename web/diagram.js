@@ -57,10 +57,10 @@ export function diagramSVG(circuits) {
       `<text class="dg-label" x="${wireMid}" y="${y - 6}" text-anchor="middle">${esc(awg)}</text>`,
       `<text class="dg-small" x="${wireMid}" y="${y + 15}" text-anchor="middle">${esc(row.length_ft)} ft round trip${guessed ? ` (${esc(row.length_source || 'guess')})` : ''}</text>`,
       `<rect class="dg-load" x="${LOAD_X}" y="${y - 14}" width="${LOAD_W}" height="28" rx="4"/>`,
-      `<text x="${LOAD_X + 8}" y="${y + 5}">${esc(clip(row.name, 30))}</text>`,
+      `<text x="${LOAD_X + 8}" y="${y + 5}">${esc(clip(String(row.name ?? ''), 30))}</text>`,
       `</g>`,
     );
   });
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" class="diagram" viewBox="0 0 ${WIDTH} ${height}" width="${WIDTH}" height="${height}" role="img" aria-label="DC one-line diagram of the circuits above">${parts.join('')}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" class="diagram" viewBox="0 0 ${WIDTH} ${height}" width="${WIDTH}" height="${height}">${parts.join('')}</svg>`;
 }
