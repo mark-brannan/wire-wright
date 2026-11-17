@@ -12,3 +12,6 @@ heading is the UTC stamp, so `agent_decisions.md#<stamp>` links one entry.
 
 ### 20261117t213802z
 - Diagram draws the positive side only (battery, bus, fuse, run, load), dashed for planned and amber for unmeasured runs, reusing the page's existing colour variables Undo: revert the diagram section in web/index.html ([#7](https://github.com/mark-brannan/wire-wright/issues/7)) (no PR, branch claude/circuit-table-demo)
+
+### 20261117t213810z
+- The editable table and live sizing already shipped in #24, so this PR adds only the diagram stub and leaves the dist-web housekeeping question open Undo: none needed; nothing changed ([#7](https://github.com/mark-brannan/wire-wright/issues/7)) (no PR, branch claude/circuit-table-demo)
