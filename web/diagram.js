@@ -20,6 +20,17 @@ const WIDTH = LOAD_X + LOAD_W + 10;
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 const clip = (s, n) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 
+// How one circuit is drawn: dashed if planned, guess colour if its run is not
+// measured, error colour if it could not be sized. Kept apart from the markup
+// so a test can pin the decision, not the class names.
+export function circuitMarks({ row, sized }) {
+  return {
+    planned: Boolean(row.status && row.status !== 'installed'),
+    guessed: sized.flags.some((f) => f.startsWith('length:')),
+    error: Boolean(sized.error),
+  };
+}
+
 // `circuits` is one entry per grid row, in grid order: the row as typed
 // (`row`, CSV-shaped strings) and what `sizeRow` returned for it (`sized`).
 export function diagramSVG(circuits) {
@@ -40,9 +51,8 @@ export function diagramSVG(circuits) {
   circuits.forEach(({ row, sized }, i) => {
     const y = TOP + i * ROW;
     const r = sized.row;
-    const planned = row.status && row.status !== 'installed';
-    const guessed = sized.flags.some((f) => f.startsWith('length:'));
-    const cls = ['dg-circuit', planned ? 'dg-planned' : '', sized.error ? 'dg-error' : ''].join(' ').trim();
+    const { planned, guessed, error } = circuitMarks({ row, sized });
+    const cls = ['dg-circuit', planned ? 'dg-planned' : '', error ? 'dg-error' : ''].join(' ').trim();
     const fuse = r && r.fuse !== null ? `${r.fuse} A` : '—';
     const awg = !r ? 'not sized' : r.awg === null ? '4/0+' : `${r.awg} AWG`;
     const wireMid = (FUSE_X + FUSE_W + LOAD_X) / 2;

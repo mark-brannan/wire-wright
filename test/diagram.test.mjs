@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseCSV, sizeRow } from '../lib/circuits.js';
-import { diagramSVG } from '../web/diagram.js';
+import { diagramSVG, circuitMarks } from '../web/diagram.js';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const rows = parseCSV(readFileSync(path.join(root, 'web/sample-circuits.csv'), 'utf8'));
@@ -24,17 +24,16 @@ test('one circuit group per row, each labelled with the wire and fuse the grid s
 });
 
 test('planned circuits and unmeasured runs are marked', () => {
-  const svg = diagramSVG(circuits);
-  const planned = rows.filter((r) => r.status === 'planned').length;
-  assert.equal((svg.match(/dg-planned/g) ?? []).length, planned);
-  const unmeasured = rows.filter((r) => r.length_source !== 'measured').length;
-  assert.equal((svg.match(/dg-wire dg-guess/g) ?? []).length, unmeasured);
+  circuits.forEach((c, i) => {
+    const m = circuitMarks(c);
+    assert.equal(m.planned, rows[i].status === 'planned', `${rows[i].name}: planned`);
+    assert.equal(m.guessed, rows[i].length_source !== 'measured', `${rows[i].name}: guessed`);
+  });
 });
 
 test('a circuit name cannot inject markup, and a rejected row is drawn as an error', () => {
   const row = { name: '<img src=x onerror=alert(1)>', amps: '5', length_ft: '10', engine_space: 'true', insulation_c: '60' };
-  const svg = diagramSVG([{ row, sized: sizeRow(row) }]);
-  assert.ok(!svg.includes('<img'));
-  assert.match(svg, /dg-error/);
-  assert.match(svg, />not sized</);
+  const circuit = { row, sized: sizeRow(row) };
+  assert.ok(!diagramSVG([circuit]).includes('<img'));
+  assert.equal(circuitMarks(circuit).error, true);
 });
