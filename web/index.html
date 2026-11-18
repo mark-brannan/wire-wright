@@ -80,6 +80,21 @@
   dl.legend dt { float: left; clear: left; margin-right: 0.5rem; }
   dl.legend dd { margin: 0 0 0.3rem 0; }
 
+  .stub { font-size: 0.7rem; font-weight: 600; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 0.45rem; vertical-align: middle; }
+  .diagramwrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; padding: 0.5rem; }
+  svg.diagram { display: block; font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; }
+  svg.diagram line { stroke: currentColor; stroke-width: 1.5; }
+  svg.diagram .dg-bus { stroke-width: 5; stroke-linecap: round; }
+  svg.diagram rect { fill: Canvas; stroke: currentColor; stroke-width: 1.5; }
+  svg.diagram text { fill: currentColor; }
+  svg.diagram .dg-label { font-weight: 700; }
+  svg.diagram .dg-small { fill: var(--muted); font-size: 11px; }
+  svg.diagram .dg-wire { stroke-width: 3; }
+  svg.diagram .dg-guess { stroke: var(--warn); }
+  svg.diagram .dg-planned line, svg.diagram .dg-planned rect { stroke-dasharray: 5 3; }
+  svg.diagram .dg-error line, svg.diagram .dg-error rect { stroke: var(--error); }
+  svg.diagram .dg-error text { fill: var(--error); }
+
   details.single { margin-top: 2rem; max-width: 640px; }
   details.single summary { cursor: pointer; font-weight: 600; }
   fieldset { border: 1px solid var(--line); border-radius: 8px; padding: 1rem; margin: 1rem 0 1.5rem; }
@@ -148,6 +163,13 @@
     <dt><span class="flag flag-status">planned</span></dt>
     <dd>Not installed yet.</dd>
   </dl>
+
+  <h2>Wiring diagram <span class="stub">sketch</span></h2>
+  <p class="note-text">
+    The positive side of each circuit above, drawn from the same rows: battery, bus, fuse, wire run, load.
+    Dashed is planned; amber wire is a run not yet measured. Hover a circuit for its details.
+  </p>
+  <div class="diagramwrap" id="diagram"></div>
 
   <details class="single">
     <summary>Just one circuit?</summary>
